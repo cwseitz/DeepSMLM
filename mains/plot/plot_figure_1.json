@@ -1,0 +1,73 @@
+{
+
+"mle_2d":
+{
+"datapath":"/home/cwseitz/Desktop/Torch/Stacks2D/",
+"analpath": "/home/cwseitz/Desktop/Torch/Analysis/",
+"texp": 1.0,
+"eta": 0.8,
+"sigma": 0.92,
+"gain": "cmos/gain.npz",
+"offset": "cmos/offset.npz",
+"var": "cmos/var.npz",
+"N0": 1000,
+"B0": 0,
+"pixel_size_lateral": 108.3,
+"klog_thresholds": [0.0003,0.0003,0.0003],
+"plog_thresholds": [0.0003,0.0003,0.0003],
+"k_lrs": [[1e-4,1e-4,0.0,100.0],
+          [1e-4,1e-4,0.0,100.0],
+          [1e-4,1e-4,0.0,100.0]],
+"p_lrs": [[1e-3,1e-3,0.0,10.0],
+          [1e-4,1e-4,0.0,100.0],
+          [1e-4,1e-4,0.0,100.0]]
+},
+
+"mle_3d":
+{
+"datapath":"/home/cwseitz/Desktop/Torch/Stacks3D_800nm/",
+"analpath": "/home/cwseitz/Desktop/Torch/Analysis/",
+"texp": 1.0,
+"eta": 0.8,
+"sigma": 0.92,
+"gain": "cmos/gain.npz",
+"offset": "cmos/offset.npz",
+"var": "cmos/var.npz",
+"N0": 1000,
+"B0": 0,
+"pixel_size_lateral": 108.3,
+"klog_thresholds": [0.0003,0.0003,0.0003],
+"plog_thresholds": [0.0003,0.0003,0.0003],
+"k_lrs": [[1e-3,1e-3,1e-3,100.0],
+          [1e-3,1e-3,1e-3,100.0],
+          [1e-3,1e-3,1e-3,100.0]],
+"p_lrs": [[1e-3,1e-3,1e-3,100.0],
+          [1e-4,1e-4,1e-4,100.0],
+          [1e-5,1e-5,1e-5,100.0]]
+},
+
+"cnn_2d":
+{
+"datapath":"/home/cwseitz/Desktop/Torch/Stacks2D/",
+"modelpath": "/home/cwseitz/Desktop/Torch/Models2D/",
+"analpath": "/home/cwseitz/Desktop/Torch/Analysis/",
+"modelname": "0731_015007",
+"pixel_size_lateral": 108.3,
+"thresh_cnn": 30,
+"radius": 4
+},
+
+"cnn_3d":
+{
+"datapath":"/home/cwseitz/Desktop/Torch/Stacks3D_800nm/",
+"modelpath": "/home/cwseitz/Desktop/Torch/Models3D/",
+"analpath": "/home/cwseitz/Desktop/Torch/Analysis/",
+"modelname": "0730_202236",
+"pixel_size_lateral": 108.3,
+"thresh_cnn": 30,
+"radius": 4,
+"zhrange": 1.0,
+"nz": 40
+}
+
+}

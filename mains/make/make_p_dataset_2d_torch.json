@@ -1,0 +1,17 @@
+{
+"savepath": "/home/cwseitz/Desktop/Torch/Stacks2D/",
+"ngenerate": 1000,
+"prefix": "230720_Mix2D_p",
+"texp": 1.0,
+"nx": 64,
+"ny": 64,
+"eta": 0.8,
+"sigma": 0.92,
+"gain": "cmos/gain.npz",
+"offset": "cmos/offset.npz",
+"var": "cmos/var.npz",
+"N0": [100,500,1000],
+"B0": 0,
+"pixel_size_lateral": 108.3,
+"particles": 1
+}

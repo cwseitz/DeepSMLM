@@ -1,0 +1,8 @@
+{
+	"datapath": "/research2/shared/cwseitz/Data/IF/230816/",
+	"analpath": "/research2/shared/cwseitz/Analysis/IF/230816/",
+	"modelpath": "/research3/shared/cwseitz/Models/NucleusModel/model_best.pth",
+	"threshold": 0.165,
+	"filters": {"min_area":2e4,"max_area":4e4,"min_solid":0.8},
+	"p0": 0.975
+}

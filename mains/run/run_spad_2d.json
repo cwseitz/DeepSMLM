@@ -1,0 +1,13 @@
+{
+"nx": 8,
+"ny": 8,
+"sigma": 0.3,
+"particles": 1,
+"nt": 1000,
+"lam0": 100.0,
+"texp": 1.0,
+"eta": 1.0,
+"gain": "cmos/gain.npz",
+"offset": "cmos/offset.npz",
+"var": "cmos/var.npz"
+}

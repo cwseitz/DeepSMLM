@@ -1,0 +1,13 @@
+{
+"texp": 1.0,
+"eta": 0.8,
+"gain": "cmos/gain.npz",
+"offset": "cmos/offset.npz",
+"var": "cmos/var.npz",
+"sigma": 0.92,
+"N0": 1000,
+"datapath": "/research3/shared/cwseitz/Data/STORM/230705/",
+"analpath": "/research3/shared/cwseitz/Analysis/STORM/",
+"modelpath": "/research3/shared/cwseitz/Models/STORM2DModel/",
+"threshold": 0.0003
+}
