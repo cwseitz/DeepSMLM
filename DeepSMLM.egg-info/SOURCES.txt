@@ -1,0 +1,5 @@
+setup.py
+DeepSMLM.egg-info/PKG-INFO
+DeepSMLM.egg-info/SOURCES.txt
+DeepSMLM.egg-info/dependency_links.txt
+DeepSMLM.egg-info/top_level.txt

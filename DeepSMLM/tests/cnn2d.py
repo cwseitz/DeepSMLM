@@ -5,11 +5,10 @@ import numpy as np
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import napari
-from SMLM.generators import Mix3D
-from SMLM.torch.utils import prepare_device
-from SMLM.torch.models import LocalizationCNN
-from SMLM.torch.pred import PostProcessor3D
-from SMLM.torch.train.metrics import jaccard_coeff
+from BaseSMLM.generators import Mix3D
+from ..torch.utils import prepare_device
+from ..torch.models import LocalizationCNN
+from ..torch.train.metrics import jaccard_coeff
 from scipy.spatial.distance import cdist
 
 class CNN3D_Test:
@@ -21,7 +20,7 @@ class CNN3D_Test:
         self.pred_config = pred_config
         self.model,self.device = self.load_model() 
         pixel_size_axial =  2*setup_config['zhrange']/setup_config['nz']
-        self.pprocessor = PostProcessor3D(setup_config,pred_config,device=self.device)
+        #self.pprocessor = PostProcessor3D(setup_config,pred_config,device=self.device)
         
     def load_model(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

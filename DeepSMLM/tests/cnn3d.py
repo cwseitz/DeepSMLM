@@ -5,10 +5,10 @@ import numpy as np
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import napari
-from SMLM.generators import Mix3D
-from SMLM.torch.utils import prepare_device
-from SMLM.torch.models import LocalizationCNN
-from SMLM.torch.train.metrics import jaccard_coeff
+from BaseSMLM.generators import Mix3D
+from ..torch.utils import prepare_device
+from ..torch.models import LocalizationCNN
+from ..torch.train.metrics import jaccard_coeff
 from scipy.spatial.distance import cdist
 
 class CNN3D_Test:
