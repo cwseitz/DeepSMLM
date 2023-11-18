@@ -5,15 +5,15 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 
-import SMLM.torch.train.loss as module_loss
-import SMLM.torch.train.metrics as module_metric
-import SMLM.torch.models as module_arch
+import DeepSMLM.torch.train.loss as module_loss
+import DeepSMLM.torch.train.metrics as module_metric
+import DeepSMLM.torch.models as module_arch
 
-from SMLM.torch.utils import ConfigParser
-from SMLM.torch.utils import prepare_device
-from SMLM.torch.train import LocalizationTrainer
+from DeepSMLM.torch.utils import ConfigParser
+from DeepSMLM.torch.utils import prepare_device
+from DeepSMLM.torch.train import LocalizationTrainer
 
-from SMLM.torch.loaders import SMLMDataLoader
+from DeepSMLM.torch.loaders import SMLMDataLoader
 from torchsummary import summary
 
 train_config = 'train_cnn_2d.json'
@@ -24,12 +24,11 @@ logger = train_config.get_logger('train')
 
 batch_size = 4
 dataloader = SMLMDataLoader(train_config['data_loader']['path'],batch_size,validation_split=0.1,shuffle=False)
-
-
 valid_data_loader = dataloader.split_validation()
+print(f'Found {len(dataloader)} train and {len(valid_data_loader)} validation batches')
+
 model = train_config.init_obj('arch', module_arch)
 logger.info(model)
-
 
 n_gpu = 0
 device, device_ids = prepare_device(n_gpu)
@@ -53,4 +52,5 @@ trainer = LocalizationTrainer(model, criterion, metrics, optimizer,
                                           
 
 trainer.train()
+
 

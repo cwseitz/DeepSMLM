@@ -8,6 +8,7 @@ from glob import glob
 class SMLMDataset(Dataset):
     def __init__(self,path,name):
         self.stack = tifffile.imread(path+'.tif')
+        print(self.stack.shape)
         self.name = name
         try:
             prefix = path.split('.')[0]
@@ -37,5 +38,7 @@ class SMLMDataset_Train(Dataset):
     def __getitem__(self, idx):
         input = imread(self.files_input[idx]).astype(np.float32)
         target = imread(self.files_target[idx])
+        input = np.expand_dims(input,0)
+        target = np.expand_dims(target,0)
         return input,target
 
