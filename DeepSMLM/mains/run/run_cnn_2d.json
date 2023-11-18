@@ -1,8 +1,0 @@
-{
-"datapath": "/research3/shared/cwseitz/Data/STORM/230909/",
-"analpath": "/research3/shared/cwseitz/Analysis/STORM/230909/",
-"modelpath": "/research3/shared/cwseitz/Models/STORM2DModel/",
-"modelname": "0722_230144",
-"threshold": 30,
-"radius": 4
-}
