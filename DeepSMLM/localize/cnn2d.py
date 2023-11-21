@@ -10,17 +10,18 @@ from DeepSMLM.torch.utils import prepare_device
 from DeepSMLM.torch.models import LocalizationCNN
 from torch.nn import Module, MaxPool2d, ConstantPad3d
 from torch.nn.functional import conv3d
+from skimage.feature import blob_log
+from skimage.util import img_as_float
 
 def tensor_to_np(x):
     return np.squeeze(x.cpu().detach().numpy())
 
-class NeuralEstimator2D:
-    def __init__(self,config,pixel_size=108.3):
+class BaseEstimator2D:
+    def __init__(self,config):
         self.modelpath = config['modelpath']
         self.modelname = config['modelname']
         self.model,self.device = self.load_model()
         self.spots = pd.DataFrame(columns=['x','y'])
-        self.pprocessor = PostProcessor2D(config['thresh_cnn'],config['radius'],pixel_size=pixel_size,device=self.device)
     def load_model(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         with open(self.modelpath+self.modelname+'/config.json', 'r') as f:
@@ -37,16 +38,30 @@ class NeuralEstimator2D:
         stack = torch.from_numpy(stack)
         stack = stack.to(self.device)
         nb,nc,nx,ny = stack.shape
-        xyb = []
+        xyb = []; outputs = []
         for n in range(nb):
             print(f'Model forward on frame {n}')
             output = self.model(stack[n].unsqueeze(0))
-            print(output.shape)
             xy = self.pprocessor.forward(output)
             spots = pd.DataFrame(xy,columns=['x','y'])
             spots = spots.assign(frame=n)
             xyb.append(spots)
-        return pd.concat(xyb,ignore_index=True)
+            outputs.append(output.detach().cpu().numpy())
+        outputs = np.squeeze(np.array(outputs))
+        all_spots = pd.concat(xyb,ignore_index=True)
+        return all_spots,outputs
+
+class NeuralEstimator2D(BaseEstimator2D):
+    def __init__(self,config):
+        super().__init__(config)
+        self.pprocessor = PostProcessor2D(config['thresh_cnn'],config['radius'],pixel_size=config['pixel_size_lateral'],
+                device=self.device)
+
+class NeuralEstimatorLoG2D(BaseEstimator2D):
+    def __init__(self,config):
+        super().__init__(config)
+        self.pprocessor = PostProcessorLoG2D(config['min_sigma'],config['max_sigma'],
+        config['num_sigma'],config['threshold'],config['overlap'])
         
 class PostProcessor2D(Module):
     def __init__(self,threshold,radius,pixel_size=108.3,device='cpu'):
@@ -79,7 +94,24 @@ class PostProcessor2D(Module):
         xyz_rec = np.column_stack((xrec, yrec)) + 0.5
         return xyz_rec
 
-        
+class PostProcessorLoG2D:
+    def __init__(self,min_sigma=1,max_sigma=3,num_sigma=5,threshold=0.5,
+                 overlap=0.5):
+        self.min_sigma = min_sigma
+        self.max_sigma = max_sigma
+        self.num_sigma = num_sigma
+        self.threshold = threshold
+        self.overlap = overlap
+    def forward(self,X):
+        spots = blob_log(img_as_float(X.detach().cpu().numpy()),
+                         min_sigma=self.min_sigma,
+                         max_sigma=self.max_sigma,
+                         num_sigma=self.num_sigma,
+                         threshold=self.threshold,
+                         overlap=self.overlap)
+        return spots[:,2:4]
+       
+
         
         
         
