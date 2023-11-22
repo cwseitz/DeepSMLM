@@ -43,7 +43,7 @@ class BaseEstimator2D:
             print(f'Model forward on frame {n}')
             output = self.model(stack[n].unsqueeze(0))
             xy = self.pprocessor.forward(output)
-            spots = pd.DataFrame(xy,columns=['x','y'])
+            spots = pd.DataFrame(xy,columns=['x','y','peak'])
             spots = spots.assign(frame=n)
             xyb.append(spots)
             outputs.append(output.detach().cpu().numpy())
@@ -103,13 +103,18 @@ class PostProcessorLoG2D:
         self.threshold = threshold
         self.overlap = overlap
     def forward(self,X):
-        spots = blob_log(img_as_float(X.detach().cpu().numpy()),
+        X = np.squeeze(X.detach().cpu().numpy())
+        spots = blob_log(img_as_float(X),
                          min_sigma=self.min_sigma,
                          max_sigma=self.max_sigma,
                          num_sigma=self.num_sigma,
                          threshold=self.threshold,
                          overlap=self.overlap)
-        return spots[:,2:4]
+        spots = spots[:,:2].astype(np.int16)
+        peaks = X[spots[:,0],spots[:,1]]
+        peaks = peaks[:,np.newaxis]
+        spots = np.concatenate([spots,peaks],axis=1)
+        return spots
        
 
         
