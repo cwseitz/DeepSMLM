@@ -24,12 +24,14 @@ class BaseEstimator2D:
         self.spots = pd.DataFrame(columns=['x','y'])
     def load_model(self):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        with open(self.modelpath+self.modelname+'/config.json', 'r') as f:
+        train_config = self.modelpath+self.modelname+'/'+self.modelname+'.json'
+        with open(train_config, 'r') as f:
             train_config = json.load(f)
         args = train_config['arch']['args']
         model = LocalizationCNN(args['nz'],args['scaling_factor'],dilation_flag=args['dilation_flag'])
         model = model.to(device=device)
-        checkpoint = torch.load(self.modelpath+self.modelname+'/'+self.modelname+'.pth', map_location=device)
+        checkpoint = self.modelpath+self.modelname+'/'+self.modelname+'.pth'
+        checkpoint = torch.load(checkpoint, map_location=device)
         model.load_state_dict(checkpoint['state_dict'])
         model.eval()
         return model,device
@@ -43,7 +45,8 @@ class BaseEstimator2D:
             print(f'Model forward on frame {n}')
             output = self.model(stack[n].unsqueeze(0))
             xy = self.pprocessor.forward(output)
-            spots = pd.DataFrame(xy,columns=['x','y','peak'])
+            #spots = pd.DataFrame(xy,columns=['x','y','peak'])
+            spots = pd.DataFrame(xy,columns=['x','y'])
             spots = spots.assign(frame=n)
             xyb.append(spots)
             outputs.append(output.detach().cpu().numpy())
@@ -111,9 +114,9 @@ class PostProcessorLoG2D:
                          threshold=self.threshold,
                          overlap=self.overlap)
         spots = spots[:,:2].astype(np.int16)
-        peaks = X[spots[:,0],spots[:,1]]
-        peaks = peaks[:,np.newaxis]
-        spots = np.concatenate([spots,peaks],axis=1)
+        #peaks = X[spots[:,0],spots[:,1]]
+        #peaks = peaks[:,np.newaxis]
+        #spots = np.concatenate([spots,peaks],axis=1)
         return spots
        
 
