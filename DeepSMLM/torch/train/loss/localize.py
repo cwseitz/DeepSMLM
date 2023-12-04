@@ -1,9 +1,23 @@
-# Import modules and libraries
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
+
+def vae_loss(pred,target,mu,logvar,beta=1.0,latent_dim=5):
+
+    diff = pred-target
+
+    #Compute reconstruction loss
+    mse = nn.MSELoss()
+    recons_loss = 0.5*(latent_dim*np.log(2*np.pi) + mse(pred,target))
+
+    #Compute KL loss
+    kld_loss = -0.5 * torch.mean(torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1))
+
+    #Compute total loss
+    loss = recons_loss + beta*kld_loss
+    return loss
 
 def dice_loss(pred, target):
     """

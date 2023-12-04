@@ -1,13 +1,13 @@
 {
 		"name": "DeepSMLM",
-		"n_gpu": 0,
+		"n_gpu": 1,
 
 		"arch": {
 				"type": "LocalizationCNN",
 				"args": {"nz": 1, "scaling_factor": 800, "dilation_flag": true}
 		},
 		"data_loader": {
-		         "path":"/research2/shared/cwseitz/Data/Torch/Train2D/"},
+		         "path":"/home/cwseitz/Desktop/Torch/Train2D/"},
 		"optimizer": {
 				"type": "Adam",
 				"args":{
@@ -25,7 +25,7 @@
 				}
 		},
 		"trainer": {
-				"epochs": 1,
+				"epochs": 50,
 				"save_dir": "saved/",
 				"save_period": 10,
 				"verbosity": 2,

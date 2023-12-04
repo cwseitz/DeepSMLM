@@ -30,8 +30,7 @@ print(f'Found {len(dataloader)} train and {len(valid_data_loader)} validation ba
 model = train_config.init_obj('arch', module_arch)
 logger.info(model)
 
-n_gpu = 0
-device, device_ids = prepare_device(n_gpu)
+device, device_ids = prepare_device(train_config['n_gpu'])
 model = model.to(device)
 if len(device_ids) > 1:
     model = torch.nn.DataParallel(model, device_ids=device_ids)
@@ -49,8 +48,8 @@ trainer = LocalizationTrainer(model, criterion, metrics, optimizer,
                               data_loader=dataloader,
                               valid_data_loader=valid_data_loader,
                               lr_scheduler=lr_scheduler)
-                                          
+                                  
 
 trainer.train()
-
+     
 

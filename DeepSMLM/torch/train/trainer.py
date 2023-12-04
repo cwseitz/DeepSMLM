@@ -8,6 +8,7 @@ from ..utils import inf_loop, MetricTracker
 from ..logger import TensorboardWriter
 import matplotlib.pyplot as plt
 
+
 class LocalizationTrainer(BaseTrainer):
     """
     Trainer class
