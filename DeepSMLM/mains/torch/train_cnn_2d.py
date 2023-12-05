@@ -42,7 +42,7 @@ optimizer = train_config.init_obj('optimizer', torch.optim, trainable_params)
 lr_scheduler = train_config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
 
-summary(model,(1,50,50))
+#summary(model,(1,50,50))
 trainer = LocalizationTrainer(model, criterion, metrics, optimizer,
                               config=train_config,device=device,
                               data_loader=dataloader,

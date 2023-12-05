@@ -33,6 +33,7 @@ class UNetModel(nn.Module):
         self.outc = OutConv(64, n_classes)
 
     def forward(self, x):
+        x = F.interpolate(x, scale_factor=4, mode='bilinear', align_corners=True)
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)

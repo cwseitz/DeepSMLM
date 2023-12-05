@@ -47,6 +47,7 @@ class UNETTrainer(BaseTrainer):
             data, target = data.to(self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
             self.optimizer.zero_grad()
             output = self.model(data)
+            target = torch.cat([target, 1-target], dim=1)
             loss = self.criterion(output, target)
             loss.backward()
             self.optimizer.step()
@@ -92,6 +93,7 @@ class UNETTrainer(BaseTrainer):
         with torch.no_grad():
             for batch_idx, (data, target) in enumerate(self.valid_data_loader):
                 data, target = data.to(self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
+                target = torch.cat([target, 1-target], dim=1)
 
                 output = self.model(data)
                 loss = self.criterion(output, target)

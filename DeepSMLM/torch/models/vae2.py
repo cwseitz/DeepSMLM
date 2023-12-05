@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.init as init
 import torch.nn.functional as F
+import json
 from torchvision import datasets, transforms
 from scipy.stats import kde
+from .localize import LocalizationCNN
 from BaseSMLM.generators import Generator
         
 class Decoder(nn.Module):
@@ -48,60 +50,70 @@ class Decoder(nn.Module):
 
         return mu
 
-class LocalizationVAE(nn.Module):
-    def __init__(self, latent_dim, nx, ny):
-        super(LocalizationVAE, self).__init__()
+class LocalizationVAE2(nn.Module):
+    """Includes a traininable DeepSTORM encoder"""
+    def __init__(self, latent_dim, nx, ny, scaling_factor=800.0):
+        super(LocalizationVAE2, self).__init__()
         self.nx = nx; self.ny = ny
         self.latent_dim = latent_dim
-        nc=1; ndf=8
+        nc=1; ndf=8; nz=1
 
-        # Fully connected layers (MLP) for the encoder
-        self.encoder = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(nx * ny, 512),
-            nn.ReLU(inplace=True),
-            nn.Linear(512, 256),
-            nn.ReLU(inplace=True),
-            nn.Linear(256, 128),
-            nn.ReLU(inplace=True),
-        )
+        self.flatten = nn.Flatten()
 
         # Fully connected layers for mu and logvar
-        self.mu = nn.Linear(128, latent_dim)
-        self.logvar = nn.Linear(128, latent_dim)
+        self.fcdim = (4*self.nx)**2
+        hidden1 = 256; hidden2 = 128
         
-        #self.mu = nn.Linear(64, latent_dim)
-        #self.logvar = nn.Linear(64, latent_dim)
+        self.mu = nn.Sequential(
+            nn.Linear(self.fcdim, hidden1),
+            nn.ReLU(),
+            nn.Linear(hidden1, hidden2),
+            nn.ReLU(),
+            nn.Linear(hidden2, latent_dim)
+        )
 
+        self.logvar = nn.Sequential(
+            nn.Linear(self.fcdim, hidden1),
+            nn.ReLU(),
+            nn.Linear(hidden1, hidden2),
+            nn.ReLU(),
+            nn.Linear(hidden2, latent_dim)
+        )
+                
         self.decoder = Decoder(nx,ny)
+        self.norm = nn.BatchNorm1d(self.fcdim)
+        self.encoder = LocalizationCNN(1,800)
 
     def sample(self, mu, logvar):
         std = torch.exp(0.5*logvar)
         eps = torch.randn_like(std)
-        z = mu + (eps * std)
-        z = z + self.nx/2
+        z = mu + (eps * std) + self.nx/2
         return z
 
     def encode(self, input):
         conv = self.encoder(input)
-        #conv = conv.view(-1, 512 * (self.nx // 4) * (self.ny // 4))
-        #conv = conv.view(-1, 64)
-        mu = self.mu(conv)
-        logvar = self.logvar(conv)
-        return mu,logvar
+        blur = transforms.GaussianBlur(kernel_size=5, sigma=1.0)
+        conv = blur(conv)
+        return conv
 
     def decode(self, z):
         out = self.decoder.forward(z)
         return out
 
     def forward(self, input):
-        mu,logvar = self.encode(input)
+        conv = self.encode(input)
+        out = self.flatten(conv)
+        mu = self.mu(out)
+        logvar = self.logvar(out)
         z = self.sample(mu,logvar)
         x = self.decode(z)
 
-        #fig,ax=plt.subplots(1,2)
+        #zplot = z[0].reshape((2,5)).cpu().detach().numpy()
+        #fig,ax=plt.subplots(1,3)
         #ax[0].imshow(input[0,0].cpu().detach().numpy())
         #ax[1].imshow(x[0,0].cpu().detach().numpy())
+        #ax[1].scatter(zplot[1,:],zplot[0,:])
+        #ax[2].imshow(conv[0,0].cpu().detach().numpy())
         #plt.show()
 
         return x,mu,logvar
