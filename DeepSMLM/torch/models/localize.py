@@ -59,8 +59,8 @@ class LocalizationCNN(nn.Module):
         features = torch.cat((out, im), 1)
         out = interpolate(features, scale_factor=2)
         out = self.deconv1(out)
-        out = interpolate(out, scale_factor=2)
-        out = self.deconv2(out)
+        #out = interpolate(out, scale_factor=2)
+        #out = self.deconv2(out)
 
         # refine z and exact xy
         out = self.layer7(out)

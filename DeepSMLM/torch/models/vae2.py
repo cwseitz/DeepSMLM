@@ -116,7 +116,7 @@ class LocalizationVAE2(nn.Module):
         #ax[2].imshow(conv[0,0].cpu().detach().numpy())
         #plt.show()
 
-        return x,mu,logvar
+        return x,conv,mu,logvar
 
         
 
