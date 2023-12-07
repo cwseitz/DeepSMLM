@@ -24,7 +24,7 @@ class Decoder(nn.Module):
         alpha = torch.sqrt(torch.tensor(2.0)) * sigma
         return 0.5 * (torch.erf((Y + 0.5 - y0) / alpha) - torch.erf((Y - 0.5 - y0) / alpha))
 
-    def forward(self, z, sigma=0.92, texp=1.0, eta=1.0, N0=1000.0, patch_hw=3):
+    def forward(self,z,sigma=0.92,texp=1.0,eta=1.0,N0=1.0,patch_hw=3):
         batch_size, _ = z.shape
         nspots = _ // 2
         z = z.reshape((batch_size,2,nspots))
@@ -44,7 +44,7 @@ class Decoder(nn.Module):
                 x0p = x0 - patchx
                 y0p = y0 - patchy
                 if 0 <= patchx < self.nx - 2 * patch_hw and 0 <= patchy < self.ny - 2 * patch_hw:
-                    this_mu = i0 * self.lamx(X, x0p, sigma) * self.lamy(Y, y0p, sigma)
+                    this_mu = i0 * self.lamx(X, y0p, sigma) * self.lamy(Y, x0p, sigma)
                     mu[batch_idx, :, patchx:patchx + 2 * patch_hw, patchy:patchy + 2 * patch_hw] += this_mu
 
 
@@ -57,11 +57,10 @@ class LocalizationVAE1(nn.Module):
         self.nx = nx; self.ny = ny
         self.latent_dim = latent_dim
         nc=1; ndf=8; nz=1
-
         self.flatten = nn.Flatten()
 
         # Fully connected layers for mu and logvar
-        self.fcdim = (4*self.nx)**2
+        self.fcdim = (2*self.nx)**2
         hidden1 = 256; hidden2 = 128
         
         self.mu = nn.Sequential(
@@ -80,7 +79,7 @@ class LocalizationVAE1(nn.Module):
             nn.Linear(hidden2, latent_dim)
         )
                 
-        self.decoder = Decoder(nx,ny)
+        self.decoder = Decoder(20,20)
         self.norm = nn.BatchNorm1d(self.fcdim)
         
     def load_cnn(self,modelpath,modelname):
@@ -99,7 +98,7 @@ class LocalizationVAE1(nn.Module):
     def sample(self, mu, logvar):
         std = torch.exp(0.5*logvar)
         eps = torch.randn_like(std)
-        z = mu + (eps * std) + self.nx/2
+        z = mu + (eps * std) + 10
         return z
 
     def encode(self, input):
@@ -112,7 +111,7 @@ class LocalizationVAE1(nn.Module):
         out = self.decoder.forward(z)
         return out
 
-    def forward(self, input):
+    def forward(self, input, plot=True):
         conv = self.encode(input)
         out = self.flatten(conv)
         mu = self.mu(out)
@@ -120,15 +119,17 @@ class LocalizationVAE1(nn.Module):
         z = self.sample(mu,logvar)
         x = self.decode(z)
 
-        #zplot = z[0].reshape((2,5)).cpu().detach().numpy()
-        #fig,ax=plt.subplots(1,3)
-        #ax[0].imshow(input[0,0].cpu().detach().numpy())
-        #ax[1].imshow(x[0,0].cpu().detach().numpy())
-        #ax[1].scatter(zplot[1,:],zplot[0,:])
-        #ax[2].imshow(conv[0,0].cpu().detach().numpy())
-        #plt.show()
+        if plot:
+            #print(self.nx)
+            zplot = z[0].reshape((2,5)).cpu().detach().numpy()
+            fig,ax=plt.subplots(1,3)
+            ax[0].imshow(input[0,0].cpu().detach().numpy())
+            ax[1].imshow(x[0,0].cpu().detach().numpy())
+            ax[1].scatter(zplot[1,:],zplot[0,:])
+            ax[2].imshow(conv[0,0].cpu().detach().numpy())
+            plt.show()
 
-        return x,conv,mu,logvar
+        return x,mu,logvar
 
         
 

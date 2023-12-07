@@ -61,7 +61,7 @@ class LocalizationVAE2(nn.Module):
         self.flatten = nn.Flatten()
 
         # Fully connected layers for mu and logvar
-        self.fcdim = (4*self.nx)**2
+        self.fcdim = (2*self.nx)**2
         hidden1 = 256; hidden2 = 128
         
         self.mu = nn.Sequential(
@@ -116,7 +116,7 @@ class LocalizationVAE2(nn.Module):
         #ax[2].imshow(conv[0,0].cpu().detach().numpy())
         #plt.show()
 
-        return x,conv,mu,logvar
+        return x,mu,logvar
 
         
 

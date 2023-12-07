@@ -5,7 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def vae_loss(pred,target,mu,logvar,beta=1.0,latent_dim=5):
-
+    #fig,ax=plt.subplots(1,2)
+    #ax[0].imshow(pred[0,0].cpu().detach().numpy())
+    #ax[1].imshow(target[0,0].cpu().detach().numpy())
+    #plt.show()
     diff = pred-target
 
     #Compute reconstruction loss

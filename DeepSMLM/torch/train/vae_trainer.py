@@ -48,8 +48,7 @@ class VAETrainer(BaseTrainer):
             data, target = data.to(self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
             self.optimizer.zero_grad()
             output,mu,logvar = self.model(data)
-            
-            loss = self.criterion(output, data, mu, logvar)
+            loss = self.criterion(output, target, mu, logvar)
             loss.backward()
             self.optimizer.step()
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
