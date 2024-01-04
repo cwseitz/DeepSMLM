@@ -8,7 +8,6 @@ from glob import glob
 class SMLMDataset(Dataset):
     def __init__(self,path,name):
         self.stack = tifffile.imread(path+'.tif')
-        print(self.stack.shape)
         self.name = name
         try:
             prefix = path.split('.')[0]
